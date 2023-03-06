@@ -1,0 +1,78 @@
+name = "minpack"
+description = "Minpack includes software for solving nonlinear equations and nonlinear least squares problems"
+homepage = "https://github.com/fortran-lang/minpack"
+version = "2.0.0"
+license = "MIT"
+author = "minpack contributors"
+maintainer = "@fortran-lang"
+copyright = "Copyright (c) 2022 minpack contributors; Minpack Copyright Notice (1999) University of Chicago. All rights reserved"
+categories = ["numerical"]
+keywords = ["least squares", "linear equations", "nonlinear equations"]
+
+[install]
+library = true
+
+[build]
+auto-executables = false
+auto-tests = false
+auto-examples = false
+
+[[test]]
+name = "test_chkder"
+source-dir = "test"
+main = "test_chkder.f90"
+
+[[test]]
+name = "test_hybrd"
+source-dir = "test"
+main = "test_hybrd.f90"
+
+[[test]]
+name = "test_hybrj"
+source-dir = "test"
+main = "test_hybrj.f90"
+
+[[test]]
+name = "test_lmder"
+source-dir = "test"
+main = "test_lmder.f90"
+
+[[test]]
+name = "test_lmdif"
+source-dir = "test"
+main = "test_lmdif.f90"
+
+[[test]]
+name = "test_lmstr"
+source-dir = "test"
+main = "test_lmstr.f90"
+
+[[example]]
+name = "example_hybrd"
+source-dir = "examples"
+main = "example_hybrd.f90"
+
+[[example]]
+name = "example_hybrd1"
+source-dir = "examples"
+main = "example_hybrd1.f90"
+
+[[example]]
+name = "example_lmder1"
+source-dir = "examples"
+main = "example_lmder1.f90"
+
+[[example]]
+name = "example_lmdif1"
+source-dir = "examples"
+main = "example_lmdif1.f90"
+
+[[example]]
+name = "example_primes"
+source-dir = "examples"
+main = "example_primes.f90"
+
+# [[test]]
+# name = "c-test"
+# source-dir = "test/api"
+# main = "tester.c"
