@@ -736,6 +736,3 @@ program test_hybrd
 end program test_hybrd
 !*****************************************************************************************
 
-
-program main
-end program
