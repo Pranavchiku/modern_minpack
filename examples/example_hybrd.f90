@@ -59,7 +59,7 @@ program example_hybrd
     if (abs(fnorm - 1.1926358347598092E-008_wp) > 1e-16) error stop
     if ((abs(nfev - 14)) > 1e-16) error stop
     if ((abs(info - 1)) > 1e-16) error stop
-    print *, "sum2(x) = ", sum2(x)
+    print *, "sum(x) = ", sum2(x)
     if(abs(sum2(x) - (-5.7297012139802952_wp)) >  1e-16) error stop
 
 contains
