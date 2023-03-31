@@ -56,6 +56,12 @@ program example_hybrd
     !>>  -0.7042129D+00 -0.7013690D+00 -0.6918656D+00
     !>>  -0.6657920D+00 -0.5960342D+00 -0.4164121D+00
 
+    if ((abs(fnorm) - 0.1192636D-07) > 1e-16) error stop
+    if ((abs(nfev) - 14) > 1e-16) error stop
+    if ((abs(info) - 1) > 1e-16) error stop
+    print *, "sum2(x) = ", sum2(x)
+    if(abs(sum2(x) - (-5.7297012139802952_wp)) >  1e-16) error stop
+
 contains
 
     !> Subroutine fcn for hybrd example.
@@ -89,5 +95,14 @@ contains
         end if
 
     end subroutine fcn
+
+    real(wp) function sum2(x) result(r)
+    real(wp), intent(in) :: x(:)
+    integer :: i
+    r = 0
+    do i = 1, size(x)
+        r = r + x(i)
+    end do
+    end function
 
 end program example_hybrd
