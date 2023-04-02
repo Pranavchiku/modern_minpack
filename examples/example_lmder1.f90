@@ -30,6 +30,11 @@ write(nwrite, '(5x,a,d15.7//,5x,a,16x,i10//,5x,a//(5x,3d15.7))') &
         'EXIT PARAMETER', info, &
         'FINAL APPROXIMATE SOLUTION', x
 
+print *, "enorm(m,fvec) = ", enorm(m,fvec)
+print *, "info = ", info
+if((abs(enorm(m,fvec) - 9.0635960339046667E-002_wp)) > 1e-16) error stop
+print *, "sum(x) = ", sum2(x)
+if((abs(sum2(x) - (3.5591418689884917_wp))) > 1e-16) error stop
 contains
 
 subroutine check_deriv()
@@ -97,4 +102,12 @@ subroutine fcn(m, n, x, fvec, fjac, ldfjac, iflag)
 
     end subroutine fcn
 
+real(wp) function sum2(x) result(r)
+    real(wp), intent(in) :: x(:)
+    integer :: i
+    r = 0
+    do i = 1, size(x)
+        r = r + x(i)
+    end do
+end function
 end program
