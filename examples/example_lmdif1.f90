@@ -27,6 +27,9 @@ write(nwrite, '(5x,a,d15.7//,5x,a,16x,i10//,5x,a//(5x,3d15.7))') &
         'EXIT PARAMETER', info, &
         'FINAL APPROXIMATE SOLUTION', x
 
+if((abs(enorm(m,fvec) - 9.0635960339047666E-002_wp)) > 1e-16) error stop
+print *, "sum(x) = ", sum2(x)
+if((abs(sum2(x) - (3.5591418703844604_wp))) > 1e-16) error stop
 contains
 
 subroutine fcn(m, n, x, fvec, iflag)
@@ -44,6 +47,7 @@ subroutine fcn(m, n, x, fvec, iflag)
                                    3.2e-1_wp, 3.5e-1_wp, 3.9e-1_wp, 3.7e-1_wp, 5.8e-1_wp, &
                                    7.3e-1_wp, 9.6e-1_wp, 1.34e0_wp, 2.1e0_wp, 4.39e0_wp]
 
+
     if (iflag > 0) then ! just to avoid the compiler warning
         do i = 1, 15
             tmp1 = i
@@ -55,5 +59,14 @@ subroutine fcn(m, n, x, fvec, iflag)
     end if
 
 end subroutine fcn
+
+real(wp) function sum2(x) result(r)
+real(wp), intent(in) :: x(:)
+integer :: i
+r = 0
+do i = 1, size(x)
+    r = r + x(i)
+end do
+end function
 
 end program example_lmdif1
