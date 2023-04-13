@@ -73,9 +73,11 @@ implicit none
 real(wp) :: pars(3)
 real(wp) :: y(20) = real([2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, &
                                     37, 41, 43, 47, 53, 59, 61, 67, 71], wp)
+real(wp) :: x(20)
 integer :: i
 pars = [1.0_wp, 1.0_wp, 1.0_wp]
-call find_fit([(real(i, wp), i=1,size(y))], y, expression, pars)
+x = [(real(i, wp), i=1,size(y))]
+call find_fit(x, y, expression, pars)
 
 write(nwrite, '(1p,5x,a/(5x,3e15.7))') 'pars: ',pars
 
