@@ -9,15 +9,6 @@ implicit none
 
 private
 
-abstract interface
-    function expr_f(x, pars) result(y)
-        import :: wp
-        implicit none
-        real(wp), intent(in) :: x(:)
-        real(wp), intent(in) :: pars(:)
-        real(wp) :: y(size(x))
-    end function expr_f
-end interface
 
 public :: find_fit
 
@@ -31,7 +22,15 @@ subroutine find_fit(data_x, data_y, expr, pars)
 ! length.
 real(wp), intent(in) :: data_x(:)
 real(wp), intent(in) :: data_y(:)
-procedure(expr_f) :: expr
+interface
+    function expr(x, pars) result(y)
+        import :: wp
+        implicit none
+        real(wp), intent(in) :: x(:)
+        real(wp), intent(in) :: pars(:)
+        real(wp) :: y(size(x))
+    end function expr
+end interface
 real(wp), intent(inout) :: pars(:)
 
 real(wp) :: tol, fvec(size(data_x))
