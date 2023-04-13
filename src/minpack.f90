@@ -435,7 +435,7 @@ contains
 
         implicit none
 
-        procedure(func) :: fcn !! the user-supplied subroutine which
+        ! procedure(func) :: fcn !! the user-supplied subroutine which
                             !! calculates the functions.
         integer, intent(in) :: n !! a positive integer input variable set to the number
                             !! of functions and variables.
@@ -470,7 +470,16 @@ contains
 
         integer :: i, j, k, msum
         real(wp) :: eps, h, temp
-
+        interface
+            subroutine fcn(n, x, fvec, iflag)
+                import :: wp
+                implicit none
+                integer, intent(in) :: n
+                real(wp), intent(in) :: x(n)
+                real(wp), intent(out) :: fvec(n)
+                integer, intent(inout) :: iflag
+            end subroutine fcn
+        end interface
         eps = sqrt(max(Epsfcn, epsmch))
         msum = Ml + Mu + 1
         if (msum < n) then
@@ -523,7 +532,7 @@ contains
 
         implicit none
 
-        procedure(func2) :: fcn !! the user-supplied subroutine which
+        !procedure(func2) :: fcn !! the user-supplied subroutine which
                             !! calculates the functions.
         integer, intent(in) :: m !! a positive integer input variable set to the number
                             !! of functions.
@@ -550,6 +559,20 @@ contains
         integer :: i, j
         real(wp) :: eps, h, temp
 
+        interface
+            subroutine fcn(m, n, x, fvec, iflag)
+                !! user-supplied subroutine for [[fdjac2]], [[lmdif]], and [[lmdif1]]
+                import :: wp
+                implicit none
+                integer, intent(in) :: m !! the number of functions.
+                integer, intent(in) :: n !! the number of variables.
+                real(wp), intent(in) :: x(n) !! independent variable vector
+                real(wp), intent(out) :: fvec(m) !! value of function at `x`
+                integer, intent(inout) :: iflag !! the value of iflag should not be changed unless
+                                            !! the user wants to terminate execution of lmdif.
+                                            !! in this case set iflag to a negative integer.
+            end subroutine
+        end interface
         eps = sqrt(max(Epsfcn, epsmch))
         do j = 1, n
             temp = x(j)
@@ -581,7 +604,7 @@ contains
 
         implicit none
 
-        procedure(func) :: fcn                  !! user-supplied subroutine which calculates the functions
+        ! procedure(func) :: fcn                  !! user-supplied subroutine which calculates the functions
         integer, intent(in) :: n                 !! a positive integer input variable set to the number
                                             !! of functions and variables.
         integer, intent(in) :: maxfev            !! a positive integer input variable. termination
@@ -670,6 +693,16 @@ contains
         logical :: jeval, sing
         real(wp) :: actred, delta, fnorm, fnorm1, pnorm, prered, ratio, sum, temp, xnorm
 
+        interface
+            subroutine fcn(n, x, fvec, iflag)
+                import :: wp
+                implicit none
+                integer, intent(in) :: n
+                real(wp), intent(in) :: x(n)
+                real(wp), intent(out) :: fvec(n)
+                integer, intent(inout) :: iflag
+            end subroutine fcn
+        end interface
         real(wp), parameter :: p1 = 1.0e-1_wp
         real(wp), parameter :: p5 = 5.0e-1_wp
         real(wp), parameter :: p001 = 1.0e-3_wp
@@ -960,7 +993,7 @@ contains
 
         implicit none
 
-        procedure(func)                     :: fcn      !! user-supplied subroutine which calculates the functions
+        ! procedure(func) :: fcn      !! user-supplied subroutine which calculates the functions
         integer, intent(in)                  :: n        !! a positive integer input variable set to the number
                                                     !! of functions and variables.
         integer, intent(out)                 :: info     !! an integer output variable. if the user has
@@ -990,7 +1023,16 @@ contains
 
         integer :: index, j, lr, maxfev, ml, mode, mu, nfev, nprint
         real(wp) :: epsfcn, xtol
-
+        interface
+            subroutine fcn(n, x, fvec, iflag)
+                import :: wp
+                implicit none
+                integer, intent(in) :: n !! the number of variables.
+                real(wp), intent(in) :: x(n) !! independent variable vector
+                real(wp), intent(out) :: fvec(n) !! value of function at `x`
+                integer, intent(inout) :: iflag !! set to <0 to terminate execution
+            end subroutine
+        end interface
         reaL(wp), parameter :: factor = 100.0_wp
 
         Info = 0
@@ -1033,7 +1075,7 @@ contains
 
         implicit none
 
-        procedure(fcn_hybrj) :: fcn !! the user-supplied subroutine which
+        ! procedure(fcn_hybrj) :: fcn !! the user-supplied subroutine which
                                 !! calculates the functions and the jacobian
         integer, intent(in) :: n !! a positive integer input variable set to the number
                             !! of functions and variables.
@@ -1113,6 +1155,26 @@ contains
         logical :: jeval, sing
         real(wp) :: actred, delta, fnorm, fnorm1, pnorm, prered, ratio, sum, temp, xnorm
 
+        interface
+            subroutine fcn(n, x, fvec, fjac, ldfjac, iflag)
+                !! user-supplied subroutine for [[hybrj]] and [[hybrj1]]
+                import :: wp
+                implicit none
+                integer, intent(in) :: n !! the number of variables.
+                real(wp), dimension(n), intent(in) :: x !! independent variable vector
+                integer, intent(in) :: ldfjac !! leading dimension of the array fjac.
+                real(wp), dimension(n), intent(inout) :: fvec !! value of function at `x`
+                real(wp), dimension(ldfjac, n), intent(inout) :: fjac !! jacobian matrix at `x`
+                integer, intent(inout) :: iflag !! if iflag = 1 calculate the functions at x and
+                                                !! return this vector in fvec. do not alter fjac.
+                                                !! if iflag = 2 calculate the jacobian at x and
+                                                !! return this matrix in fjac. do not alter fvec.
+                                                !!
+                                                !! the value of iflag should not be changed by fcn unless
+                                                !! the user wants to terminate execution of hybrj.
+                                                !! in this case set iflag to a negative integer.
+            end subroutine fcn
+        end interface
         real(wp), parameter :: p1 = 1.0e-1_wp
         real(wp), parameter :: p5 = 5.0e-1_wp
         real(wp), parameter :: p001 = 1.0e-3_wp
@@ -1402,7 +1464,7 @@ contains
 
         implicit none
 
-        procedure(fcn_hybrj) :: fcn !! the user-supplied subroutine which
+        ! procedure(fcn_hybrj) :: fcn !! the user-supplied subroutine which
                                 !! calculates the functions and the jacobian
         integer, intent(in) :: n !! a positive integer input variable set to the number
                             !! of functions and variables.
@@ -1439,6 +1501,26 @@ contains
         integer :: j, lr, maxfev, mode, nfev, njev, nprint
         real(wp) :: xtol
 
+        interface
+            subroutine fcn(n, x, fvec, fjac, ldfjac, iflag)
+                !! user-supplied subroutine for [[hybrj]] and [[hybrj1]]
+                import :: wp
+                implicit none
+                integer, intent(in) :: n !! the number of variables.
+                real(wp), dimension(n), intent(in) :: x !! independent variable vector
+                integer, intent(in) :: ldfjac !! leading dimension of the array fjac.
+                real(wp), dimension(n), intent(inout) :: fvec !! value of function at `x`
+                real(wp), dimension(ldfjac, n), intent(inout) :: fjac !! jacobian matrix at `x`
+                integer, intent(inout) :: iflag !! if iflag = 1 calculate the functions at x and
+                                                !! return this vector in fvec. do not alter fjac.
+                                                !! if iflag = 2 calculate the jacobian at x and
+                                                !! return this matrix in fjac. do not alter fvec.
+                                                !!
+                                                !! the value of iflag should not be changed by fcn unless
+                                                !! the user wants to terminate execution of hybrj.
+                                                !! in this case set iflag to a negative integer.
+            end subroutine fcn
+        end interface
         real(wp), parameter :: factor = 100.0_wp
 
         Info = 0
@@ -1477,7 +1559,7 @@ contains
 
         implicit none
 
-        procedure(fcn_lmder) :: fcn !! the user-supplied subroutine which
+        ! procedure(fcn_lmder) :: fcn !! the user-supplied subroutine which
                                 !! calculates the functions and the jacobian
         integer, intent(in) :: m !! a positive integer input variable set to the number
                             !! of functions.
@@ -1584,6 +1666,27 @@ contains
         real(wp) :: actred, delta, dirder, fnorm, fnorm1, gnorm, par, &
                     pnorm, prered, ratio, sum, temp, temp1, temp2, xnorm
 
+        interface
+            subroutine fcn(m, n, x, fvec, fjac, ldfjac, iflag)
+                !! user-supplied subroutine for [[lmder]] and [[lmder1]]
+                import :: wp
+                implicit none
+                integer, intent(in) :: m !! the number of functions.
+                integer, intent(in) :: n !! the number of variables.
+                integer, intent(in) :: ldfjac !! leading dimension of the array fjac.
+                integer, intent(inout) :: iflag !! if iflag = 1 calculate the functions at x and
+                                            !! return this vector in fvec. do not alter fjac.
+                                            !! if iflag = 2 calculate the jacobian at x and
+                                            !! return this matrix in fjac. do not alter fvec.
+                                            !!
+                                            !! the value of iflag should not be changed by fcn unless
+                                            !! the user wants to terminate execution of lmder.
+                                            !! in this case set iflag to a negative integer.
+                real(wp), intent(in) :: x(n) !! independent variable vector
+                real(wp), intent(inout) :: fvec(m) !! value of function at `x`
+                real(wp), intent(inout) :: fjac(ldfjac, n) !! jacobian matrix at `x`
+            end subroutine fcn
+        end interface
         real(wp), parameter :: p1 = 1.0e-1_wp
         real(wp), parameter :: p5 = 5.0e-1_wp
         real(wp), parameter :: p25 = 2.5e-1_wp
@@ -1846,7 +1949,7 @@ contains
     subroutine lmder1(fcn, m, n, x, Fvec, Fjac, Ldfjac, Tol, Info, Ipvt, Wa, Lwa)
         implicit none
 
-        procedure(fcn_lmder) :: fcn !! user-supplied subroutine which
+        ! procedure(fcn_lmder) :: fcn !! user-supplied subroutine which
                                     !! calculates the functions and the jacobian.
         integer, intent(in) :: m !! a positive integer input variable set to the number
                                 !! of functions.
@@ -1906,7 +2009,27 @@ contains
 
         integer :: maxfev, mode, nfev, njev, nprint
         real(wp) :: ftol, gtol, xtol
-
+        interface
+            subroutine fcn(m, n, x, fvec, fjac, ldfjac, iflag)
+                !! user-supplied subroutine for [[lmder]] and [[lmder1]]
+                import :: wp
+                implicit none
+                integer, intent(in) :: m !! the number of functions.
+                integer, intent(in) :: n !! the number of variables.
+                integer, intent(in) :: ldfjac !! leading dimension of the array fjac.
+                integer, intent(inout) :: iflag !! if iflag = 1 calculate the functions at x and
+                                            !! return this vector in fvec. do not alter fjac.
+                                            !! if iflag = 2 calculate the jacobian at x and
+                                            !! return this matrix in fjac. do not alter fvec.
+                                            !!
+                                            !! the value of iflag should not be changed by fcn unless
+                                            !! the user wants to terminate execution of lmder.
+                                            !! in this case set iflag to a negative integer.
+                real(wp), intent(in) :: x(n) !! independent variable vector
+                real(wp), intent(inout) :: fvec(m) !! value of function at `x`
+                real(wp), intent(inout) :: fjac(ldfjac, n) !! jacobian matrix at `x`
+            end subroutine fcn
+        end interface
         real(wp), parameter :: factor = 100.0_wp
 
         Info = 0
@@ -1944,7 +2067,7 @@ contains
                      Qtf, Wa1, Wa2, Wa3, Wa4)
         implicit none
 
-        procedure(func2) :: fcn !! the user-supplied subroutine which
+        ! procedure(func2) :: fcn !! the user-supplied subroutine which
                                 !! calculates the functions.
         integer, intent(in) :: m !! a positive integer input variable set to the number
                                 !! of functions.
@@ -2056,6 +2179,20 @@ contains
                     fnorm1, gnorm, par, pnorm, prered, &
                     ratio, sum, temp, temp1, temp2, xnorm
 
+        interface
+            subroutine fcn(m, n, x, fvec, iflag)
+                !! user-supplied subroutine for [[fdjac2]], [[lmdif]], and [[lmdif1]]
+                import :: wp
+                implicit none
+                integer, intent(in) :: m !! the number of functions.
+                integer, intent(in) :: n !! the number of variables.
+                real(wp), intent(in) :: x(n) !! independent variable vector
+                real(wp), intent(out) :: fvec(m) !! value of function at `x`
+                integer, intent(inout) :: iflag !! the value of iflag should not be changed unless
+                                            !! the user wants to terminate execution of lmdif.
+                                            !! in this case set iflag to a negative integer.
+            end subroutine
+        end interface
         real(wp), parameter :: p1 = 1.0e-1_wp
         real(wp), parameter :: p5 = 5.0e-1_wp
         real(wp), parameter :: p25 = 2.5e-1_wp
@@ -2331,7 +2468,7 @@ contains
     subroutine lmdif1(fcn, m, n, x, Fvec, Tol, Info, Iwa, Wa, Lwa)
         implicit none
 
-        procedure(func2) :: fcn !! the user-supplied subroutine which
+        ! procedure(func2) :: fcn !! the user-supplied subroutine which
                                 !! calculates the functions.
         integer, intent(in) :: m !! a positive integer input variable set to the number
                                 !! of functions.
@@ -2374,6 +2511,20 @@ contains
         integer :: maxfev, mode, mp5n, nfev, nprint
         real(wp) :: epsfcn, ftol, gtol, xtol
 
+        interface
+            subroutine fcn(m, n, x, fvec, iflag)
+                !! user-supplied subroutine for [[fdjac2]], [[lmdif]], and [[lmdif1]]
+                import :: wp
+                implicit none
+                integer, intent(in) :: m !! the number of functions.
+                integer, intent(in) :: n !! the number of variables.
+                real(wp), intent(in) :: x(n) !! independent variable vector
+                real(wp), intent(out) :: fvec(m) !! value of function at `x`
+                integer, intent(inout) :: iflag !! the value of iflag should not be changed unless
+                                            !! the user wants to terminate execution of lmdif.
+                                            !! in this case set iflag to a negative integer.
+            end subroutine
+        end interface
         real(wp), parameter :: factor = 1.0e2_wp
 
         Info = 0
@@ -2644,7 +2795,7 @@ contains
                      Wa1, Wa2, Wa3, Wa4)
         implicit none
 
-        procedure(fcn_lmstr) :: fcn !! user-supplied subroutine which
+        ! procedure(fcn_lmstr) :: fcn !! user-supplied subroutine which
                                     !! calculates the functions and the rows of the jacobian.
         integer, intent(in) :: m !! a positive integer input variable set to the number
                                 !! of functions.
@@ -2750,6 +2901,25 @@ contains
                     ratio, sum, temp, temp1, temp2, xnorm
         logical :: sing
 
+        interface
+            subroutine fcn(m, n, x, fvec, fjrow, iflag)
+                import :: wp
+                implicit none
+                integer, intent(in) :: m !! the number of functions.
+                integer, intent(in) :: n !! the number of variables.
+                integer, intent(inout) :: iflag !! if iflag = 1 calculate the functions at x and
+                                        !! return this vector in fvec.
+                                        !! if iflag = i calculate the (i-1)-st row of the
+                                        !! jacobian at x and return this vector in fjrow.
+                                        !!
+                                        !! the value of iflag should not be changed by fcn unless
+                                        !! the user wants to terminate execution of lmstr.
+                                        !! in this case set iflag to a negative integer.
+                real(wp), intent(in) :: x(n) !! independent variable vector
+                real(wp), intent(inout) :: fvec(m) !! value of function at `x`
+                real(wp), intent(inout) :: fjrow(n) !! jacobian row
+            end subroutine fcn
+        end interface
         real(wp), parameter :: p1 = 1.0e-1_wp
         real(wp), parameter :: p5 = 5.0e-1_wp
         real(wp), parameter :: p25 = 2.5e-1_wp
@@ -3033,7 +3203,7 @@ contains
     subroutine lmstr1(fcn, m, n, x, Fvec, Fjac, Ldfjac, Tol, Info, Ipvt, Wa, Lwa)
         implicit none
 
-        procedure(fcn_lmstr) :: fcn !! user-supplied subroutine which
+        ! procedure(fcn_lmstr) :: fcn !! user-supplied subroutine which
                                     !! calculates the functions and the rows of the jacobian.
         integer, intent(in) :: m !! a positive integer input variable set to the number
                                 !! of functions.
@@ -3091,7 +3261,25 @@ contains
 
         integer :: maxfev, mode, nfev, njev, nprint
         real(wp) :: ftol, gtol, xtol
-
+        interface
+            subroutine fcn(m, n, x, fvec, fjrow, iflag)
+                import :: wp
+                implicit none
+                integer, intent(in) :: m !! the number of functions.
+                integer, intent(in) :: n !! the number of variables.
+                integer, intent(inout) :: iflag !! if iflag = 1 calculate the functions at x and
+                                        !! return this vector in fvec.
+                                        !! if iflag = i calculate the (i-1)-st row of the
+                                        !! jacobian at x and return this vector in fjrow.
+                                        !!
+                                        !! the value of iflag should not be changed by fcn unless
+                                        !! the user wants to terminate execution of lmstr.
+                                        !! in this case set iflag to a negative integer.
+                real(wp), intent(in) :: x(n) !! independent variable vector
+                real(wp), intent(inout) :: fvec(m) !! value of function at `x`
+                real(wp), intent(inout) :: fjrow(n) !! jacobian row
+            end subroutine fcn
+        end interface
         real(wp), parameter :: factor = 1.0e2_wp
 
         Info = 0
