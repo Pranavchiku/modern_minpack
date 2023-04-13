@@ -71,7 +71,7 @@ use iso_fortran_env, only: nwrite => output_unit
 implicit none
 
 real(wp) :: pars(3)
-real(wp), parameter :: y(*) = real([2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, &
+real(wp) :: y(20) = real([2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, &
                                     37, 41, 43, 47, 53, 59, 61, 67, 71], wp)
 integer :: i
 pars = [1.0_wp, 1.0_wp, 1.0_wp]
