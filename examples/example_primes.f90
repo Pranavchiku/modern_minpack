@@ -86,12 +86,13 @@ contains
 function expression(x, pars) result(y)
 real(wp), intent(in) :: x(:)
 real(wp), intent(in) :: pars(:)
-real(wp) :: y(size(x))
+real(wp) :: y(size(x)), d(size(x))
 real(wp) :: a, b, c
 a = pars(1)
 b = pars(2)
 c = pars(3)
-y = a*x*log(b + c*x)
+d = b + c*x
+y = a*x*log(d)
 end function expression
 
 end program example_primes
