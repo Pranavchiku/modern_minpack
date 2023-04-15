@@ -55,9 +55,9 @@ program test_hybrd
             lwa = (n*(3*n+13))/2
             ntries = ntriess(icase)
 
-            if (allocated(fvec)) deallocate(fvec)
-            if (allocated(wa)) deallocate(wa)
-            if (allocated(x)) deallocate(x)
+            ! if (allocated(fvec)) deallocate(fvec)
+            ! if (allocated(wa)) deallocate(wa)
+            ! if (allocated(x)) deallocate(x)
             allocate(fvec(n))
             allocate(wa(lwa))
             allocate(x(n))
