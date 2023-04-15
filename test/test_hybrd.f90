@@ -106,6 +106,7 @@ program test_hybrd
     real(wp),intent(in) :: abstol !! absolute tolerance for `x` to pass
 
     real(wp),dimension(size(x)) :: diff, absdiff, reldiff
+    real(wp), dimension(:), allocatable :: temp
 
     if (info_original(ic)<5) then    ! ignore any where the original minpack failed
         diff = solution(ic) - x
@@ -113,7 +114,10 @@ program test_hybrd
         if (any(absdiff>abstol)) then ! first do an absolute diff
             ! also do a rel diff if the abs diff fails (also protect for divide by zero)
             reldiff = absdiff
-            where (solution(ic) /= 0.0_wp) reldiff = absdiff / abs(solution(ic))
+            ! where (solution(ic) /= 0.0_wp) reldiff = absdiff / abs(solution(ic))
+            do i = 1, size(temp)
+                if (temp(i) /= 0.0_wp) reldiff(i) = absdiff(i) / abs(temp(i))
+            end do
             if (any(reldiff > reltol)) then
                 write(nwrite,'(A)') 'Failed case'
                 write(nwrite, '(//5x, a//(5x, 5d15.7))') 'Expected x: ', solution(ic)
