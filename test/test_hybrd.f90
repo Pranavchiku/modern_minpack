@@ -107,26 +107,41 @@ program test_hybrd
 
     real(wp),dimension(size(x)) :: diff, absdiff, reldiff
     real(wp), dimension(:), allocatable :: temp
+    integer :: counter, counter2
+
 
     if (info_original(ic)<5) then    ! ignore any where the original minpack failed
         diff = solution(ic) - x
         absdiff = abs(diff)
-        if (any(absdiff>abstol)) then ! first do an absolute diff
-            ! also do a rel diff if the abs diff fails (also protect for divide by zero)
-            reldiff = absdiff
-            ! where (solution(ic) /= 0.0_wp) reldiff = absdiff / abs(solution(ic))
-            do i = 1, size(temp)
-                if (temp(i) /= 0.0_wp) reldiff(i) = absdiff(i) / abs(temp(i))
-            end do
-            if (any(reldiff > reltol)) then
-                write(nwrite,'(A)') 'Failed case'
-                write(nwrite, '(//5x, a//(5x, 5d15.7))') 'Expected x: ', solution(ic)
-                write(nwrite, '(/5x, a//(5x, 5d15.7))')  'Computed x: ', x
-                write(nwrite, '(/5x, a//(5x, 5d15.7))')  'absdiff: ', absdiff
-                write(nwrite, '(/5x, a//(5x, 5d15.7))')  'reldiff: ', reldiff
-                error stop ! test failed
+        do counter = 1, size(absdiff)
+            if (absdiff(counter) > abstol) then
+                reldiff = absdiff
+                ! where (solution(ic) /= 0.0_wp) reldiff = absdiff / abs(solution(ic))
+                temp = solution(ic)
+                do i = 1, size(temp)
+                    if (temp(i) /= 0.0_wp) reldiff(i) = absdiff(i) / abs(temp(i))
+                end do
+                do counter2 = 1, size(reldiff)
+                    if (reldiff(counter2) > reltol) then
+                        write(nwrite,'(A)') 'Failed case'
+                        write(nwrite, '(//5x, a//(5x, 5d15.7))') 'Expected x: ', solution(ic)
+                        write(nwrite, '(//5x, a//(5x, 5d15.7))') 'Expected x: ', temp
+                        write(nwrite, '(/5x, a//(5x, 5d15.7))')  'Computed x: ', x
+                        write(nwrite, '(/5x, a//(5x, 5d15.7))')  'absdiff: ', absdiff
+                        write(nwrite, '(/5x, a//(5x, 5d15.7))')  'reldiff: ', reldiff
+                        error stop ! test failed
+                    end if
+                end do
+                ! if (any(reldiff > reltol)) then
+                !     write(nwrite,'(A)') 'Failed case'
+                !     write(nwrite, '(//5x, a//(5x, 5d15.7))') 'Expected x: ', solution(ic)
+                !     write(nwrite, '(/5x, a//(5x, 5d15.7))')  'Computed x: ', x
+                !     write(nwrite, '(/5x, a//(5x, 5d15.7))')  'absdiff: ', absdiff
+                !     write(nwrite, '(/5x, a//(5x, 5d15.7))')  'reldiff: ', reldiff
+                !     error stop ! test failed
+                ! end if
             end if
-        end if
+        end do
     end if
 
     end subroutine compare_solutions
