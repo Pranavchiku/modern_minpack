@@ -27,6 +27,10 @@ write(nwrite, '(5x,a,d15.7//,5x,a,16x,i10//,5x,a//(5x,3d15.7))') &
         'EXIT PARAMETER', info, &
         'FINAL APPROXIMATE SOLUTION', x
 
+if ((abs(enorm(m,fvec) - 9.0635960339047666E-002_wp)) > 1e-16) error stop
+print *, "sum(x) = ", sum(x)
+if ((abs(sum(x) - (3.5591418703844604_wp))) > 1e-16) error stop
+
 contains
 
 subroutine fcn(m, n, x, fvec, iflag)

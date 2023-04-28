@@ -47,6 +47,11 @@ program example_hybrd1
     !>>  -0.7042129D+00 -0.7013690D+00 -0.6918656D+00
     !>>  -0.6657920D+00 -0.5960342D+00 -0.4164121D+00
 
+    if (abs(fnorm - 1.1926358347598092E-008_wp) > 1e-16) error stop
+    if ((abs(info - 1)) > 1e-16) error stop
+    print *, "sum(x) = ", sum(x)
+    if (abs(sum(x) - (-5.7297012139802952_wp)) >  1e-16) error stop
+
 contains
 
     !> Subroutine fcn for hybrd1 example.
